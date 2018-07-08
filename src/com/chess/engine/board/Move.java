@@ -4,11 +4,11 @@ import com.chess.engine.pieces.Piece;
 
 public abstract class Move {
 
-	// Constructor
 	final Board board;
 	final Piece movedPiece;
 	final int destinationCoordinate;
 	
+	// Constructor
 	private Move(final Board board,
 			final Piece movedPiece,
 			final int destinationCoordinate) {
