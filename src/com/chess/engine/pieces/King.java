@@ -22,8 +22,8 @@ public class King extends Piece {
 
 	private final static int[] POTENTIAL_MOVE_COORDINATE = { -1, -9, -8, -9, 1, 7, 8, 9 };
 
-	King(int piecePosition, Alliance pieceAlliance) {
-		super(piecePosition, pieceAlliance);
+	public King(final Alliance pieceAlliance, final int piecePosition) {
+		super(PieceType.KING, piecePosition, pieceAlliance);
 
 	}
 
@@ -65,6 +65,12 @@ public class King extends Piece {
 		return ImmutableList.copyOf(legalMoves);
 		
 	}
+	
+	@Override
+	public String toString() {
+		return Piece.PieceType.KING.toString();
+	}
+	
 	// edge cases
 		private static boolean isFirstColumnEx(final int currentPosition, final int potentialOffset) {
 			

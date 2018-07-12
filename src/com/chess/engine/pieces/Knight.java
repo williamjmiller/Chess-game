@@ -8,6 +8,7 @@ import com.chess.engine.board.Board;
 import com.chess.engine.board.BoardUtils;
 import com.chess.engine.board.Move;
 import com.chess.engine.board.Tile;
+import com.chess.engine.pieces.Piece.PieceType;
 import com.google.common.collect.ImmutableList;
 
 import static com.chess.engine.board.Move.*;
@@ -20,8 +21,8 @@ public class Knight extends Piece {
 	 */
 	private final static int[] POTENTIAL_MOVE_COORDINATES = {-17, -15, -10, -6, 6, 10, 15, 17};
 	
-	Knight(int piecePosition, Alliance pieceAlliance) {
-		super(piecePosition, pieceAlliance);
+	public Knight(final Alliance pieceAlliance, final int piecePosition) {
+		super(PieceType.KNIGHT, piecePosition, pieceAlliance);
 		
 	}
 
@@ -62,6 +63,11 @@ public class Knight extends Piece {
 		}
 		
 		return ImmutableList.copyOf(legalMoves);
+	}
+	
+	@Override
+	public String toString() {
+		return Piece.PieceType.KNIGHT.toString();
 	}
 	
 	// edge cases

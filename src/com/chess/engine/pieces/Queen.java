@@ -10,12 +10,13 @@ import com.chess.engine.board.Move;
 import com.chess.engine.board.Tile;
 import com.chess.engine.board.Move.AttackMove;
 import com.chess.engine.board.Move.MajorMove;
+import com.chess.engine.pieces.Piece.PieceType;
 import com.google.common.collect.ImmutableList;
 
 public class Queen extends Piece {
 
-	Queen(int piecePosition, Alliance pieceAlliance) {
-		super(piecePosition, pieceAlliance);
+	public Queen(final Alliance pieceAlliance, final int piecePosition) {
+		super(PieceType.QUEEN, piecePosition, pieceAlliance);
 
 	}
 
@@ -69,6 +70,11 @@ public class Queen extends Piece {
 			}
 		}
 		return ImmutableList.copyOf(legalMoves);
+	}
+	
+	@Override
+	public String toString() {
+		return Piece.PieceType.QUEEN.toString();
 	}
 
 	// edge cases
