@@ -1,4 +1,4 @@
-package com.chess.engine.pieces;
+	package com.chess.engine.pieces;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -78,6 +78,12 @@ public class Pawn extends Piece {
 		}
 		
 		return ImmutableList.copyOf(legalMoves);
+	}
+	
+	@Override
+	public Pawn movePiece(Move move) {
+		
+		return new Pawn(move.getMovedPiece().getPieceAlliance(), move.getDestinationCoordinate());
 	}
 	
 	@Override
