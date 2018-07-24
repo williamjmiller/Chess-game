@@ -10,6 +10,7 @@ public abstract class Move {
 	final Board board;
 	final Piece movedPiece;
 	final int destinationCoordinate;
+	protected final boolean isFirstMove;
 	
 	public static final Move NULL_MOVE = new NullMove();
 
@@ -19,14 +20,42 @@ public abstract class Move {
 		this.board = board;
 		this.movedPiece = movedPiece;
 		this.destinationCoordinate = destinationCoordinate;
-		//this.isFirstMove = false;
+		this.isFirstMove = movedPiece.isFirstMove();
 	}
 
 	private Move(final Board board, final int destinationCoordinate) {
 		this.board = board;
 		this.destinationCoordinate = destinationCoordinate;
 		this.movedPiece = null;
-		//this.isFirstMove = false;
+		this.isFirstMove = false;
+	}
+	
+	@Override
+    public int hashCode() {
+        int result = 1;
+        result = 31 * result + this.destinationCoordinate;
+        result = 31 * result + this.movedPiece.hashCode();
+        result = 31 * result + this.movedPiece.getPiecePosition();
+        result = result + (isFirstMove ? 1 : 0);
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof Move)) {
+            return false;
+        }
+        final Move otherMove = (Move) other;
+        return getCurrentCoordinate() == otherMove.getCurrentCoordinate() &&
+               getDestinationCoordinate() == otherMove.getDestinationCoordinate() &&
+               getMovedPiece().equals(otherMove.getMovedPiece());
+    }
+	
+	public int getCurrentCoordinate() { 
+		return this.getMovedPiece().getPiecePosition();
 	}
 
 	public int getDestinationCoordinate() {
@@ -35,6 +64,22 @@ public abstract class Move {
 
 	public Piece getMovedPiece() {
 		return this.movedPiece;
+	}
+	
+	public boolean isFirstMove() {
+		return isFirstMove;
+	}
+	
+	public boolean isAttack() {
+		return false;
+	}
+	
+	public boolean isCastlingMove() {
+		return false;
+	}
+	
+	public Piece getAttackedPiece() {
+		return null;
 	}
 
 	public Board execute() {
@@ -80,6 +125,33 @@ public abstract class Move {
 			// TODO Auto-generated method stub
 			return null;
 		}
+		
+		@Override
+		public int hashCode() {
+			return this.attackedPiece.hashCode() + super.hashCode();
+		}
+		
+		@Override
+		public boolean equals(final Object other) {
+			if (this == other) {
+				return true;
+			}
+			if (!(other instanceof AttackMove)) {
+				return false;
+			}
+			final AttackMove otherAttackMove = (AttackMove) other;
+			return super.equals(otherAttackMove) && getAttackedPiece().equals(otherAttackMove.getAttackedPiece());
+		}
+		
+		@Override
+		public boolean isAttack() {
+			return true;
+		}
+		
+		@Override
+		public Piece getAttackedPiece() {
+			return this.attackedPiece;
+		}
 	}
 
 	public static class PawnMove extends Move {
@@ -110,6 +182,32 @@ public abstract class Move {
 		public PawnJump(final Board board, final Pawn pieceMoved, final int destinationCoordinate) {
 			super(board, pieceMoved, destinationCoordinate);
 		}
+		
+		 @Override
+	        public boolean equals(final Object other) {
+	            return this == other || other instanceof PawnJump && super.equals(other);
+	        }
+
+	        @Override
+	        public Board execute() {
+	            final Builder builder = new Builder();
+	            for(final Piece piece : this.board.currentPlayer().getActivePieces()) {
+	            	if (!(this.movedPiece.equals(piece))) {
+	            		builder.setPiece(piece);
+	            	}
+	            }
+	            for(final Piece piece : this.board.currentPlayer().getOpponent().getActivePieces()) {
+	            	builder.setPiece(piece);
+	            }
+	            
+	            final Pawn movedPawn = (Pawn)this.movedPiece.movePiece(this);
+	            builder.setPiece(movedPawn);
+	            builder.setEnPassantPawn(movedPawn);
+	            builder.setMoveMaker(this.board.currentPlayer().getOpponent().getAlliance());
+	           // builder.setMoveTransition(this);
+	            return builder.build();
+	        }
+
 	}
 
 	static abstract class CastleMove extends Move {
@@ -125,10 +223,6 @@ public abstract class Move {
 			this.castleRookStart = castleRookStart;
 			this.castleRookDestination = castleRookDestination;
 		}
-	}
-	
-	public int getCurrentCoordinate() {
-		return this.getMovedPiece().getPiecePosition();
 	}
 
 	public static class KingSideCastleMove extends CastleMove {
